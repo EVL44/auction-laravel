@@ -20,8 +20,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('product/{pid}',[ProductController::class,'getProduct']);
 Route::post('register',[UserController::class,'register']);
 Route::post('login',[UserController::class,'login']);
 Route::post('addproduct',[ProductController::class,'addProduct']);
 Route::get('list',[ProductController::class,'list']);
-Route::delete('delete/{pid}',[ProductController::class,'delete']);
+Route::get('user/{uid}/products', [ProductController::class, 'getUserProducts']);
+Route::delete('delete/{pid}',[ProductController::class,'deleteProduct']);
+Route::get('newest-products', [ProductController::class, 'getNewestProducts']);
+Route::get('most-expensive-products', [ProductController::class, 'getMostExpensiveProducts']);
+Route::put('update/{pid}',[ProductController::class,'updateProduct']);
