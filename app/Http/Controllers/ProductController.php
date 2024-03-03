@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -11,7 +12,23 @@ class ProductController extends Controller
     function getProduct($pid) {
         return Product::find($pid);
     }
+    public function getRemainingTime($pid)
+    {
+        $product = Product::findOrFail($pid);
+        $expirationTime = $product->expiration_time;
 
+        if ($expirationTime) {
+            $now = Carbon::now();
+            $expiration = Carbon::parse($expirationTime);
+
+            if ($now < $expiration) {
+                $remainingTime = $now->diff($expiration)->format('%J:%H:%I:%S');
+                return response()->json(['remaining_time' => $remainingTime]);
+            }
+        }
+
+        return response()->json(['message' => 'Product has expired'], 400);
+    }
     // add product 
     function addProduct(Request $req) {
         $user = auth()->user(); 
@@ -19,8 +36,11 @@ class ProductController extends Controller
         $product->name = $req->input('name');
         $product->description = $req->input('description');
         $product->price = $req->input('price');
-        $product->file_path = $req->file('file')->store('products');
-        $product->user_id = $user->uid; 
+        if ($req->hasFile('file')) {
+            $product->file_path = $req->file('file')->store('products');
+        }
+        $product->user_id = $req->input('user_id'); 
+        $product->expiration_time = $req->input('expiration_time'); // Set the expiration time
         $product->save();
 
         return $product;
@@ -47,29 +67,24 @@ class ProductController extends Controller
     }
 
     //update a product not working currently
-    function updateProduct(Request $req, $pid) {
-        $user = auth()->user(); 
+    function updateProduct($pid ,Request $req) {
+
         $product = Product::find($pid);
-        
-        if (!$product) {
-            return response()->json(["error" => "Product not found"], 404);
+        if ($req->has('name')) {
+            $product->name = $req->input('name');
         }
-
-        if ($product->user_id !== $user->uid) {
-            return response()->json(["error" => "Unauthorized"], 401);
+        if ($req->has('description')) {
+            $product->description = $req->input('description');
         }
-
-        $product->name = $req->input('name');
-        $product->description = $req->input('description');
-        $product->price = $req->input('price');
-    
+        if ($req->has('price')) {
+            $product->price = $req->input('price');
+        }
         if ($req->hasFile('file')) {
             $product->file_path = $req->file('file')->store('products');
         }
-
         $product->save();
+        return $product;
 
-        return response()->json($product);
     }
 
     // this function is for getting the newest product in the table
@@ -82,5 +97,22 @@ class ProductController extends Controller
     function getMostExpensiveProducts() {
         $mostExpensiveProducts = Product::orderBy('price', 'desc')->limit(5)->get();
         return response()->json($mostExpensiveProducts);
+    }
+
+    // this function is for search 
+    function search($key) {
+        return Product::where('name','Like',"%$key%")->get();
+    }
+
+    //this function update just the price
+    function updatePrice($pid ,Request $req) {
+
+        $product = Product::find($pid);
+        if ($req->has('price')) {
+            $product->price = $req->input('price');
+        }
+        $product->save();
+        return $product;
+
     }
 }
