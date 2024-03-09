@@ -22,7 +22,7 @@ class ProductController extends Controller
             $expiration = Carbon::parse($expirationTime);
 
             if ($now < $expiration) {
-                $remainingTime = $now->diff($expiration)->format('%J:%H:%I:%S');
+                $remainingTime = $now->diff($expiration)->format('%A:%M:%J:%H:%I:%S');
                 return response()->json(['remaining_time' => $remainingTime]);
             }
         }
@@ -89,13 +89,13 @@ class ProductController extends Controller
 
     // this function is for getting the newest product in the table
     function getNewestProducts() {
-        $newestProducts = Product::orderBy('created_at', 'desc')->limit(5)->get();
+        $newestProducts = Product::orderBy('created_at', 'desc')->limit(100)->get();
         return response()->json($newestProducts);
     }
 
     // this function is for getting the most expensive product in the table
     function getMostExpensiveProducts() {
-        $mostExpensiveProducts = Product::orderBy('price', 'desc')->limit(5)->get();
+        $mostExpensiveProducts = Product::orderBy('price', 'desc')->limit(10)->get();
         return response()->json($mostExpensiveProducts);
     }
 
