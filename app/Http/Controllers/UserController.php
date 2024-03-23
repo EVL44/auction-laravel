@@ -44,6 +44,10 @@ class UserController extends Controller
         return response()->json(['exists' => $usernameExists]);
     }
 
+    function searchUser($key) {
+        return User::where('name','Like',"%$key%")->get();
+    }
+
     function uploadAvatar($id, Request $req) {
         
         $req->validate([

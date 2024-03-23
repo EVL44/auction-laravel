@@ -33,6 +33,7 @@ Route::get('most-expensive-products', [ProductController::class, 'getMostExpensi
 Route::put('update/{pid}',[ProductController::class,'updateProduct']);
 Route::put('auction/{pid}',[ProductController::class,'updatePrice']);
 Route::get('search/{key}', [ProductController::class, 'search']);
+Route::get('usersearch/{key}', [UserController::class, 'searchUser']);
 Route::get('product/{pid}',[ProductController::class,'getProduct']);
 Route::post('/checkEmail', [UserController::class, 'checkEmail']);
 Route::post('/checkUsername', [UserController::class, 'checkUsername']);
