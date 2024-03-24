@@ -87,16 +87,20 @@ class ProductController extends Controller
 
     }
 
-    // this function is for getting the newest product in the table
-    function getNewestProducts() {
-        $newestProducts = Product::orderBy('created_at', 'desc')->limit(100)->get();
-        return response()->json($newestProducts);
-    }
+    //get the best products to show in the home page
+    function getTopAuctions() {
+        $auctions = Product::all(); 
+        $auctions = $auctions->sortByDesc(function($auction) {
+            $popularityScore = $auction->views + $auction->bids + $auction->favorites;
+            $remainingTimeScore = strtotime($auction->expiration_time) - time();
+            $priceScore = $auction->price;
+    
+            $importanceScore = $popularityScore * 0.5 + $remainingTimeScore * 0.3 + $priceScore * 0.2;
+            
+            return $importanceScore;
+        });
 
-    // this function is for getting the most expensive product in the table
-    function getMostExpensiveProducts() {
-        $mostExpensiveProducts = Product::orderBy('price', 'desc')->limit(10)->get();
-        return response()->json($mostExpensiveProducts);
+        return response()->json($auctions);
     }
 
     // this function is for search 
