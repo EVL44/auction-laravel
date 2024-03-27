@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\WishListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,3 +43,8 @@ Route::get('search/{key}', [ProductController::class, 'search']);
 Route::get('product/{pid}',[ProductController::class,'getProduct']);
 Route::get('product/{pid}/remaining-time', [ProductController::class, 'getRemainingTime']);
 Route::get('/top-auctions', [ProductController::class, 'getTopAuctions']);
+
+// wishlist Controller
+Route::post('wish',[WishListController::class,'addToWishList']);
+Route::get('getproducts/{uid}',[WishListController::class,'getWishList']);
+Route::delete('remove-from-wishlist/{uid}/{pid}', [WishListController::class,'removeFromWishList']);

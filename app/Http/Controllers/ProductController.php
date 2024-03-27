@@ -12,6 +12,8 @@ class ProductController extends Controller
     function getProduct($pid) {
         return Product::find($pid);
     }
+
+    
     public function getRemainingTime($pid)
     {
         $product = Product::findOrFail($pid);
@@ -52,6 +54,12 @@ class ProductController extends Controller
         return response()->json($userProducts);
     }
 
+    //get user product for the wishlist 
+    public function getUserWishList($uid) {
+        $userProducts = Product::where('user_id', $uid)->get();
+        return response()->json($userProducts);
+    }
+
     // list not working any more
     function list() {
         $user = auth()->user(); 
@@ -78,6 +86,9 @@ class ProductController extends Controller
         }
         if ($req->has('price')) {
             $product->price = $req->input('price');
+        }
+        if ($req->has('buyer_id')) {
+            $product->buyer_id = $req->input('buyer_id');
         }
         if ($req->hasFile('file')) {
             $product->file_path = $req->file('file')->store('products');
