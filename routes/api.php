@@ -29,6 +29,9 @@ Route::post('login',[UserController::class,'login']);
 Route::get('usersearch/{key}', [UserController::class, 'searchUser']);
 Route::post('/checkEmail', [UserController::class, 'checkEmail']);
 Route::post('/checkUsername', [UserController::class, 'checkUsername']);
+Route::put('user/{id}', [UserController::class, 'update']);
+Route::put('user/{id}/update-password', [UserController::class, 'updatePassword']);
+Route::post('user/{id}/check-old-password', [UserController::class, 'checkOldPassword']);
 
 //Product Controller
 Route::post('addproduct',[ProductController::class,'addProduct']);

@@ -62,4 +62,57 @@ class UserController extends Controller
         $user->save();
         return $user;
     }
+
+    function update($id ,Request $req) {
+
+        $user = User::find($id);
+        if ($req->has('name')) {
+            $user->name = $req->input('name');
+        }
+        if ($req->has('email')) {
+            $user->email = $req->input('email');
+        }
+        if ($req->has('phone_number')) {
+            $user->phone_number = $req->input('phone_number');
+        }
+        if ($req->has('address')) {
+            $user->address = $req->input('address');
+        }
+       
+        $user->save();
+        return $user;
+
+    }
+
+    function updatePassword($id, Request $req) {
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+        
+        $req->validate([
+            'new_password' => 'required', 
+        ]);
+        
+        $user->password = Hash::make($req->input('new_password'));
+        $user->save();
+        
+        return $user;
+    }
+    
+
+    function checkOldPassword($id, Request $req) {
+        $user = User::find($id);
+        
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
+        if (!Hash::check($req->input('old_password'), $user->password)) {
+            return response()->json(['error' => 'Old password is incorrect'], 422);
+        }
+    
+        return response()->json(['message' => 'Old password is correct'], 200);
+    }
 }
