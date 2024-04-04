@@ -21,6 +21,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 }); 
 
+// payment  gateway route stripe
+Route::middleware(['cors','web'])->group(function () {
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/plans', [PlanController::class, 'getPlans']);
+        Route::get('/logout', [UserController::class, 'logout'])->name('logout');
+        Route::post('/checkout/{id}', [PaymentController::class, 'checkout']);
+        Route::post('/plan', [PlanController::class, 'createPlan']);
+    });
+
+
+    Route::get('/checkout/success', [PaymentController::class, 'success'])->name('checkout.success');
+    Route::get('/checkout/cancel', [PaymentController::class, 'cancel'])->name('checkout.cancel');
+});
+
 //User Controller  
 Route::post('register',[UserController::class,'register']);
 Route::put('/upload-avatar/{id}', [UserController::class,'uploadAvatar']);

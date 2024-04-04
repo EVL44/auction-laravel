@@ -29,6 +29,13 @@ class UserController extends Controller
         return response()->json($user, 200);
     }
 
+     //logout
+     public function logout()
+     {
+         $user = Auth::user();
+         $user->tokens()->delete();
+     }
+
     // getting a user by its id 
     function getUser($id) {
         return User::find($id);

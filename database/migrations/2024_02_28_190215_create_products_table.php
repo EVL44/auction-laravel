@@ -21,8 +21,6 @@ return new class extends Migration
             $table->string('buyer_id')->nullable();
             $table->timestamp('expiration_time')->nullable(); 
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

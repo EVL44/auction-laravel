@@ -50,4 +50,11 @@ class User extends Authenticatable {
     public function products() {
         return $this->hasMany(Product::class, 'id', 'pid');
     }
+
+     //logout
+    public function logout()
+    {
+        $user = Auth::user();
+        $user->tokens()->delete();
+    }
 }

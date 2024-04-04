@@ -116,7 +116,13 @@ class ProductController extends Controller
 
     // this function is for search 
     function search($key) {
-        return Product::where('name','Like',"%$key%")->get();
+        $products = Product::where('name', 'like', "%$key%")->get();
+    
+        if ($products->isEmpty()) {
+            return 0; // Return 0 when no results are found
+        } else {
+            return $products; // Return products when found
+        }
     }
 
     //this function update just the price
