@@ -41,7 +41,7 @@ Route::middleware(['cors','web'])->group(function () {
 Route::post('register',[UserController::class,'register']);
 Route::put('/upload-avatar/{id}', [UserController::class,'uploadAvatar']);
 Route::get('user/{id}',[UserController::class,'getUser']);
-Route::post('login',[UserController::class,'login']);
+Route::post('login',[UserController::class,'login']); 
 Route::get('usersearch/{key}', [UserController::class, 'searchUser']);
 Route::post('/checkEmail', [UserController::class, 'checkEmail']);
 Route::post('/checkUsername', [UserController::class, 'checkUsername']);
@@ -67,3 +67,7 @@ Route::get('/top-auctions', [ProductController::class, 'getTopAuctions']);
 Route::post('wish',[WishListController::class,'addToWishList']);
 Route::get('getproducts/{uid}',[WishListController::class,'getWishList']);
 Route::delete('remove-from-wishlist/{uid}/{pid}', [WishListController::class,'removeFromWishList']);
+
+// image controller
+Route::post('/upload', [ImageController::class, 'uploadToCloudinary']);
+;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Cloudinary\Cloudinary;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -55,17 +56,25 @@ class UserController extends Controller
         return User::where('name','Like',"%$key%")->get();
     }
 
+
     function uploadAvatar($id, Request $req) {
-        
         $req->validate([
             'avatar' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        
+
         $user = User::find($id);
 
-        if ($req->hasFile('file')) {
-            $user->avatar = $req->file('file')->store('products');
+        if ($req->hasFile('avatar')) { 
+            $uploadedFile = $req->file('avatar');
+            $cloudinary = new Cloudinary();
+
+            $result = $cloudinary->uploadApi()->upload($uploadedFile->getRealPath(), [
+                'folder' => 'avatars',
+            ]);
+
+            $user->avatar = $result['secure_url']; // Store the Cloudinary URL in the database
         }
+        
         $user->save();
         return $user;
     }

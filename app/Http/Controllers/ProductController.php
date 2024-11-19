@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use Cloudinary\Cloudinary;
 use Carbon\Carbon;
 
 class ProductController extends Controller
@@ -31,22 +32,33 @@ class ProductController extends Controller
 
         return response()->json(['message' => 'Product has expired'], 400);
     }
+
     // add product 
+
     function addProduct(Request $req) {
-        $user = auth()->user(); 
         $product = new Product;
         $product->name = $req->input('name');
         $product->description = $req->input('description');
         $product->price = $req->input('price');
+
         if ($req->hasFile('file')) {
-            $product->file_path = $req->file('file')->store('products');
+            $uploadedFile = $req->file('file');
+            $cloudinary = new Cloudinary();
+
+            $result = $cloudinary->uploadApi()->upload($uploadedFile->getRealPath(), [
+                'folder' => 'products',
+            ]);
+
+            $product->file_path = $result['secure_url']; // Store the Cloudinary URL
         }
-        $product->user_id = $req->input('user_id'); 
-        $product->expiration_time = $req->input('expiration_time'); // Set the expiration time
+
+        $product->user_id = $req->input('user_id');
+        $product->expiration_time = $req->input('expiration_time');
         $product->save();
 
         return $product;
     }
+
 
     //get user product for the list 
     public function getUserProducts($uid) {
@@ -75,9 +87,9 @@ class ProductController extends Controller
     }
 
     //update a product not working currently
-    function updateProduct($pid ,Request $req) {
-
+    function updateProduct($pid, Request $req) {
         $product = Product::find($pid);
+
         if ($req->has('name')) {
             $product->name = $req->input('name');
         }
@@ -91,12 +103,20 @@ class ProductController extends Controller
             $product->buyer_id = $req->input('buyer_id');
         }
         if ($req->hasFile('file')) {
-            $product->file_path = $req->file('file')->store('products');
+            $uploadedFile = $req->file('file');
+            $cloudinary = new Cloudinary();
+
+            $result = $cloudinary->uploadApi()->upload($uploadedFile->getRealPath(), [
+                'folder' => 'products',
+            ]);
+
+            $product->file_path = $result['secure_url'];
         }
+
         $product->save();
         return $product;
-
     }
+
 
     //get the best products to show in the home page
     function getTopAuctions() {
